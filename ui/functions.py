@@ -1667,7 +1667,7 @@ def toggle_deathwish_mode(context: UserContext) -> str:
 
 
 USER_COMMANDS: dict[str, str | IFW | dict] = {
-    "check": {
+    "!check": {
         "player": IFW(None, check_player, "Shows player stats.", optional_args=[player_arg("Player name")]),
         "records": IFW(None, records, "Shows player records", optional_args=[player_arg("Player name")]),
         "board": IFW(None, check_board, "Shows the quest board."),
@@ -1688,88 +1688,88 @@ USER_COMMANDS: dict[str, str | IFW | dict] = {
         "market": IFW(None, show_market, "Shows the daily consumables you can buy."),
         "smithy": IFW(None, show_smithy, "Shows the daily equipment you can buy."),
     },
-    "sacrifice": IFW(None, sacrifice, "Sacrifice 75% of HP for XP."),
-    "ascension": IFW(None, ascension, "Use 10 artifact pieces to ascend"),
-    "raid": IFW([integer_arg("Zone number")], start_raid, "Start a raid with your guild members"),
-    "crypt": IFW(None, crypt, "Enter the crypt"),
-    "deathwish": IFW(None, toggle_deathwish_mode, "Toggle Deathwish mode"),
-    "cancel": {
+    "!sacrifice": IFW(None, sacrifice, "Sacrifice 75% of HP for XP."),
+    "!ascension": IFW(None, ascension, "Use 10 artifact pieces to ascend"),
+    "!raid": IFW([integer_arg("Zone number")], start_raid, "Start a raid with your guild members"),
+    "!crypt": IFW(None, crypt, "Enter the crypt"),
+    "!deathwish": IFW(None, toggle_deathwish_mode, "Toggle Deathwish mode"),
+    "!cancel": {
         "quest": IFW(None, cancel_quest, "Cancels the current quest.")
     },
-    "create": {
+    "!create": {
         "character": IFW(None, start_character_creation, "Create your character."),
         "guild": IFW(None, start_guild_creation, f"Create your own Guild (cost: {ContentMeta.get('guilds.creation_cost')} {MONEY})."),
         "auction": IFW([integer_arg("item"), integer_arg("Starting bid")], create_auction, "auctions the selected item."),
     },
-    "disband": IFW(None, delete_guild, "Disband your guild"),
-    "bid": IFW([integer_arg("Auction id"), integer_arg("Bid")], bid_on_auction, "bid on the selected auction."),
-    "upgrade": {
+    "!disband": IFW(None, delete_guild, "Disband your guild"),
+    "!bid": IFW([integer_arg("Auction id"), integer_arg("Bid")], bid_on_auction, "bid on the selected auction."),
+    "!upgrade": {
         "gear": IFW(None, upgrade, "Upgrade your gear.", default_args={"obj": "gear"}),
         "home": IFW(None, upgrade, "Upgrade your home.", default_args={"obj": "home"}),
         "guild": IFW(None, upgrade_guild, "Upgrade your guild."),
         "vocation": IFW([integer_arg("Vocation id")], upgrade_vocation, "Upgrade your vocations.")
     },
-    "edit": {
+    "!edit": {
         "character": IFW(None, modify_player, "Modify your character (for a price).",),
         "guild": IFW(None, modify_guild, "Modify your guild (for a price).",),
     },
-    "select": {
+    "!select": {
         "vocations": IFW([integer_arg("Vocation id")], change_vocation, "Select your vocations", optional_args=[integer_arg("Vocation id")])
     },
-    "join": IFW([guild_arg("Guild")], join_guild, "Join guild with the given name."),
-    "embark": IFW([integer_arg("Zone number")], embark_on_quest, "Starts quest in specified zone."),
-    "kick": IFW([player_arg("player")], kick, "Kicks player from your own guild."),
-    "donate": IFW([player_arg("recipient"), integer_arg("Amount")], donate, f"donates 'amount' of {MONEY} to player 'recipient'."),
-    "gift": IFW([player_arg("recipient"), integer_arg("Item")], send_gift_to_player, f"gifts an item to a player."),
-    "withdraw": IFW([integer_arg("Amount")], withdraw, "Withdraw from your guild's bank"),
-    "logs": IFW(None, check_bank_logs, "Checks the last 10 withdrawals and deposits from the bank"),
-    "cast": IFW([RWE("spell name", SPELL_NAME_REGEX, Strings.spell_name_validation_error)], cast_spell, "Cast a spell.", optional_args=[RWE("target", None, None)]),
-    "grimoire": IFW(None, return_string, "Shows & describes all spells", default_args={"string": __list_spells()}),
-    "rank": {
+    "!join": IFW([guild_arg("Guild")], join_guild, "Join guild with the given name."),
+    "!embark": IFW([integer_arg("Zone number")], embark_on_quest, "Starts quest in specified zone."),
+    "!kick": IFW([player_arg("player")], kick, "Kicks player from your own guild."),
+    "!donate": IFW([player_arg("recipient"), integer_arg("Amount")], donate, f"donates 'amount' of {MONEY} to player 'recipient'."),
+    "!gift": IFW([player_arg("recipient"), integer_arg("Item")], send_gift_to_player, f"gifts an item to a player."),
+    "!withdraw": IFW([integer_arg("Amount")], withdraw, "Withdraw from your guild's bank"),
+    "!logs": IFW(None, check_bank_logs, "Checks the last 10 withdrawals and deposits from the bank"),
+    "!cast": IFW([RWE("spell name", SPELL_NAME_REGEX, Strings.spell_name_validation_error)], cast_spell, "Cast a spell.", optional_args=[RWE("target", None, None)]),
+    "!grimoire": IFW(None, return_string, "Shows & describes all spells", default_args={"string": __list_spells()}),
+    "!rank": {
         "guilds": IFW(None, rank_guilds, "Shows the top 20 guilds, ranked based on their prestige."),
         "players": IFW(None, rank_players, "Shows the top 20 players, ranked based on their renown."),
         "tourney": IFW(None, rank_tourney, "Shows the top 10 guilds competing in the tourney. Only the top 3 will win."),
     },
-    "message": {
+    "!message": {
         "player": IFW([player_arg("player name")], send_message_to_player, "Send message to a single player."),
         "guild": IFW(None, send_message_to_owned_guild, "Send message to every member of your owned guild.")
     },
-    "duel": {
+    "!duel": {
         "invite": IFW([player_arg("player name")], duel_invite, "Send duel invite to a player."),
         "accept": IFW([player_arg("player name")], duel_accept, "Accept a duel invite."),
         "reject": IFW([player_arg("player name")], duel_reject, "Reject a duel invite.")
     },
-    "assemble": {
+    "!assemble": {
         "artifact": IFW(None, assemble_artifact, f"Assemble an artifact using {REQUIRED_PIECES} artifact pieces")
     },
-    "inventory": IFW(None, inventory, "Shows all your items"),
-    "equip": IFW([integer_arg("Item")], equip_item, "Equip an item from your inventory"),
-    "unequip": IFW(None, unequip_all_items, "Unequip all items"),
-    "sell": IFW([integer_arg("Item")], sell_item, "Sell an item from your inventory."),
-    "sellall": IFW(None, sell_all, "Sell all unused items from your inventory."),
-    "buy": IFW([integer_arg("Item")], market_buy, "Buy something from the market."),
-    "craft": IFW([integer_arg("Item")], smithy_craft, "Craft something at the smithy."),
-    "reroll": IFW([integer_arg("Item")], reroll_item, "Reroll an item from your inventory"),
-    "enchant": IFW([integer_arg("Item")], enchant_item, "Add a perk to an item from your inventory"),
-    "consume": IFW([integer_arg("Item")], use_consumable, "Use an item in your satchel"),
-    "stance": IFW([RWE("stance", None, None)], switch_stance, "Switches you stance to the given stance"),
-    "qte": IFW([integer_arg("Option")], do_quick_time_event, "Do a quick time event"),
-    "retire": IFW(None, set_last_update, f"Take a 1 year vacation (pauses the game for 1 year) (cost: 100 {MONEY})", default_args={"delta": timedelta(days=365), "msg": Strings.you_retired, "cost": 100}),
-    "back": {
+    "!inventory": IFW(None, inventory, "Shows all your items"),
+    "!equip": IFW([integer_arg("Item")], equip_item, "Equip an item from your inventory"),
+    "!unequip": IFW(None, unequip_all_items, "Unequip all items"),
+    "!sell": IFW([integer_arg("Item")], sell_item, "Sell an item from your inventory."),
+    "!sellall": IFW(None, sell_all, "Sell all unused items from your inventory."),
+    "!buy": IFW([integer_arg("Item")], market_buy, "Buy something from the market."),
+    "!craft": IFW([integer_arg("Item")], smithy_craft, "Craft something at the smithy."),
+    "!reroll": IFW([integer_arg("Item")], reroll_item, "Reroll an item from your inventory"),
+    "!enchant": IFW([integer_arg("Item")], enchant_item, "Add a perk to an item from your inventory"),
+    "!consume": IFW([integer_arg("Item")], use_consumable, "Use an item in your satchel"),
+    "!stance": IFW([RWE("stance", None, None)], switch_stance, "Switches you stance to the given stance"),
+    "!qte": IFW([integer_arg("Option")], do_quick_time_event, "Do a quick time event"),
+    "!retire": IFW(None, set_last_update, f"Take a 1 year vacation (pauses the game for 1 year) (cost: 100 {MONEY})", default_args={"delta": timedelta(days=365), "msg": Strings.you_retired, "cost": 100}),
+    "!back": {
         "to": {
             "work": IFW(None, set_last_update, "Come back from your vacation", default_args={"delta": None, "msg": Strings.you_came_back})
         }
     },
-    "minigames": IFW(None, return_string, "Shows all the minigames", default_args={"string": __list_minigames()}),
-    "vocations": IFW(None, list_vocations, "Shows all vocations"),
-    "hunt": IFW(None, force_combat, "Hunt for a strong enemy"),
-    "explore": IFW(None, force_qte, "Force a QTE"),
-    "play": IFW([RWE("minigame name", MINIGAME_NAME_REGEX, Strings.invalid_minigame_name)], start_minigame, "Play the specified minigame."),
-    "explain": {
+    "!minigames": IFW(None, return_string, "Shows all the minigames", default_args={"string": __list_minigames()}),
+    "!vocations": IFW(None, list_vocations, "Shows all vocations"),
+    "!hunt": IFW(None, force_combat, "Hunt for a strong enemy"),
+    "!explore": IFW(None, force_qte, "Force a QTE"),
+    "!play": IFW([RWE("minigame name", MINIGAME_NAME_REGEX, Strings.invalid_minigame_name)], start_minigame, "Play the specified minigame."),
+    "!explain": {
         "minigame": IFW([RWE("minigame name", MINIGAME_NAME_REGEX, Strings.invalid_minigame_name)], explain_minigame, "Explains how the specified minigame works."),
     },
-    "bestiary": IFW([integer_arg("Zone number")], bestiary, "shows all enemies that can be found in the given zone."),
-    "man": IFW([integer_arg("Page")], manual, "Shows the specified manual page.")
+    "!bestiary": IFW([integer_arg("Zone number")], bestiary, "shows all enemies that can be found in the given zone."),
+    "!man": IFW([integer_arg("Page")], manual, "Shows the specified manual page.")
 }
 
 USER_PROCESSES: dict[str, tuple[tuple[str, Callable], ...]] = {
@@ -1822,6 +1822,6 @@ USER_PROCESSES: dict[str, tuple[tuple[str, Callable], ...]] = {
 }
 
 ALIASES: dict[str, str] = {
-    "check self": "check player",
-    "check mates": "check members"
+    "!check self": "!check player",
+    "!check mates": "!check members"
 }
