@@ -23,6 +23,7 @@ from orm.models import (
     ZoneEventModel,
     ZoneModel,
     create_tables,
+    PetModel,
     db,
 )
 from orm.utils import cache_sized_ttl_quick, cache_ttl_quick, cache_ttl_single_value
@@ -38,7 +39,10 @@ from pilgram.classes import (
     Quest,
     Tourney,
     Zone,
-    ZoneEvent, Notification, Anomaly,
+    ZoneEvent,
+    Notification,
+    Anomaly,
+    Pet,
 )
 from pilgram.combat_classes import Damage, Stats
 from pilgram.equipment import ConsumableItem, Equipment, EquipmentType
@@ -302,7 +306,8 @@ class PilgramORMDatabase(PilgramDatabase):
                 decode_essences(pls.essences),
                 pls.max_level_reached,
                 pls.max_money_reached,
-                pls.max_renown_reached
+                pls.max_renown_reached,
+                None if pls.pet is None else self.get_pet_from_id(pls.pet.id)
             )
             if guild and (guild.founder is None):
                 # if guild has no founder it means the founder is the player currently being retrieved
@@ -928,7 +933,7 @@ class PilgramORMDatabase(PilgramDatabase):
 
     def __build_item(self, its: EquipmentModel) -> Equipment:
         equipment_type = EquipmentType.get(its.equipment_type)
-        _, damage, resist = Equipment.get_dmg_and_resist_values(its.level, its.damage_seed, equipment_type.is_weapon)
+        _, damage, resist = Equipment.generate_dmg_and_resist_values(its.level, its.damage_seed, equipment_type.is_weapon)
         return Equipment(
             its.id,
             its.level,
@@ -1152,6 +1157,91 @@ class PilgramORMDatabase(PilgramDatabase):
     def update_anomaly(self, anomaly: Anomaly):
         self.ANOMALY["current"] = anomaly
         save_json_to_file(self.ANOMALY_FILENAME, anomaly.get_json())
+
+    # notice board ----
+
+    NOTICE_BOARD: list[str] = []
+    NOTICE_BOARD_MAX_SIZE: int = 20
+    NOTICE_BOARD_MAX_MESSAGE_LENGTH: int = 240
+
+    def get_message_board(self) -> list[str]:
+        return self.NOTICE_BOARD
+
+    def update_notice_board(self, author: Player, message: str) -> bool:
+        if len(message) > self.NOTICE_BOARD_MAX_SIZE:
+            return False
+        self.NOTICE_BOARD.append(f"{author.name}:\n{message}")
+        if len(self.NOTICE_BOARD) > self.NOTICE_BOARD_MAX_SIZE:
+            self.NOTICE_BOARD.pop(0)
+        return True
+
+    # pets
+
+    def __build_pet(self, ps: PetModel) -> Pet:
+        enemy_meta = self.get_enemy_meta(ps.enemy_type)
+        return Pet(
+            ps.id,
+            ps.name,
+            enemy_meta,
+            ps.level,
+            ps.xp,
+            ps.hp_percent,
+            ps.stats_seed,
+            decode_modifiers(ps.modifiers)
+        )
+
+    def get_pet_from_id(self, pet_id: int) -> Pet | None:
+        try:
+            ps = PetModel.get(EquipmentModel.id == pet_id)
+            return self.__build_pet(ps)
+        except PetModel.DoesNotExist:
+            raise KeyError(f"Could not find pet with id {pet_id}")
+
+    def get_player_pets(self, player_id: int) -> list[Pet]:
+        try:
+            ps = PlayerModel.get(PlayerModel.id == player_id).pets
+            return [self.__build_pet(x) for x in ps]
+        except PlayerModel.DoesNotExist:
+            raise KeyError(f"Could not find player with id {player_id}")
+        except PetModel.DoesNotExist:
+            return []
+
+    def update_pet(self, pet: Pet, owner: Player) -> None:
+        try:
+            with db.atomic():
+                ps: PetModel = PetModel.get(PetModel.id == pet.id)
+                ps.name = pet.name
+                ps.enemy_type = pet.meta.meta_id
+                ps.owner = owner.player_id
+                ps.level = pet.level
+                ps.xp = pet.xp
+                ps.hp_percent = pet.hp_percent
+                ps.stats_seed = pet.stats_seed
+                ps.modifiers = encode_modifiers(pet.modifiers)
+                ps.save()
+        except PetModel.DoesNotExist:
+            raise KeyError(f"Could not find pet with id {pet.id}")
+
+    def add_pet(self, pet: Pet, owner: Player) -> int:
+        with db.atomic():
+            item = PetModel.create(
+                name=pet.name,
+                enemy_type=pet.meta.meta_id,
+                owner=owner.player_id,
+                level=pet.level,
+                xp=pet.xp,
+                hp_percent=pet.hp_percent,
+                stats_seed=pet.stats_seed,
+                modifiers=encode_modifiers(pet.modifiers)
+            )
+            return item.id
+
+    def delete_pet(self, pet: Pet) -> None:
+        try:
+            with db.atomic():
+                PetModel.get(PetModel.id == pet.id).delete_instance()
+        except PetModel.DoesNotExist:
+            raise KeyError(f"Could not find pet with id {pet.id} to delete")
 
     # utility functions ----
 

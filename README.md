@@ -5,16 +5,16 @@ a texting based idle MMO-RPG powered by AI.
   <img src="https://github.com/SudoOmbro/pilgram/blob/master/screenshots/img1.png" style=" width:200px ; height:200px" >
   <img src="https://github.com/SudoOmbro/pilgram/blob/master/screenshots/img2.png" style=" width:200px ; height:200px" >
   <img src="https://github.com/SudoOmbro/pilgram/blob/master/screenshots/img3.png" style=" width:200px ; height:200px" >
+  <img src="https://github.com/SudoOmbro/pilgram/blob/master/screenshots/img4.png" style=" width:200px ; height:200px" >
+  <img src="https://github.com/SudoOmbro/pilgram/blob/master/screenshots/img5.png" style=" width:200px ; height:200px" >
+  <img src="https://github.com/SudoOmbro/pilgram/blob/master/screenshots/img6.png" style=" width:200px ; height:200px" >
+  <img src="https://github.com/SudoOmbro/pilgram/blob/master/screenshots/img7.png" style=" width:200px ; height:200px" >
+  <img src="https://github.com/SudoOmbro/pilgram/blob/master/screenshots/img8.png" style=" width:200px ; height:200px" >
 </div>
 
 Embark on quests, join guilds, play minigames, cast spells... All by texting!
 
 The "main" version of pilgram is running on `@pilgram_bot` on Telegram if you want to try it out.
-
-## License
-
-Everything in this repository is under the MIT license, except for `content_meta.json`, 
-which is copyrighted and should be replaced with your own version if you want to fork this repository / host your own version of Pilgram.
 
 ## Installation
 **Note**: requires `Python >= 3.12.0`
